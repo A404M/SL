@@ -14,9 +14,10 @@ namespace SL {
         friend class CodeGenerator;
     private:
         std::vector<Node> holder;
+        Lexer lexer;
         static const std::vector<std::vector<Node>> orders;
     public:
-        explicit Parser(Lexer);
+        explicit Parser(Lexer );
 
     private:
         void parseLine(std::vector<Node>&);

@@ -4,6 +4,8 @@
 
 #include "Parser.h"
 
+#include <utility>
+
 using namespace SL;
 
 const std::vector<std::vector<Node>> Parser::orders{
@@ -38,7 +40,7 @@ const std::vector<std::vector<Node>> Parser::orders{
         }
 };
 
-Parser::Parser(Lexer lexer) {
+Parser::Parser(Lexer l) : lexer(std::move(l)) {
     for(auto& line : lexer.holder) {
         parseLine(line);
         holder.push_back(line[0]);
@@ -71,7 +73,11 @@ void Parser::parseLine(std::vector<Node>& line) {
         if(it == end){
             ++orderIt;
             if(orderIt == orders.end()){
-                throw std::runtime_error("Parser::parseLine");
+                Node *pointer = &*line.begin();
+                while(!pointer->operands.empty()){
+                    pointer = &*(pointer->operands.end()-1);
+                }
+                lexer.makeError("Excepted ';':",*pointer);
             }
             continue;
         }
@@ -101,7 +107,12 @@ void Parser::parseLine(std::vector<Node>& line) {
                             }
                         }
                         if (it >= line.end()) {
-                            throw std::runtime_error("Parser::parseLine");
+                            --it;
+                            Node *pointer = &*it;
+                            while(!pointer->operands.empty()){
+                                pointer = &*(pointer->operands.end()-1);
+                            }
+                            lexer.makeError("Excepted ')':",*pointer);
                         }
                         tempLine.push_back(*it);
                         line.erase(it);
@@ -133,7 +144,12 @@ void Parser::parseLine(std::vector<Node>& line) {
                             }
                         }
                         if (it >= line.end()) {
-                            throw std::runtime_error("Parser::parseLine");
+                            --it;
+                            Node *pointer = &*it;
+                            while(!pointer->operands.empty()){
+                                pointer = &*(pointer->operands.end()-1);
+                            }
+                            lexer.makeError("Excepted ')' :",*pointer);
                         }
                         tempLine.push_back(*it);
                         line.erase(it);
@@ -160,7 +176,7 @@ void Parser::parseLine(std::vector<Node>& line) {
                         --it;//standard 23.1.2
                         break;
                     default:
-                        throw std::runtime_error("Parser::parseLine");
+                        lexer.makeError("Unknown operator '" + it->str + "':",*it);
                 }
                 break;
             case Node::KEYWORD:{
@@ -171,7 +187,7 @@ void Parser::parseLine(std::vector<Node>& line) {
             }
                 break;
             default:
-                throw std::runtime_error("Parser::parseLine");
+                lexer.makeError("Unexpected element '" + it->str + "':",*it);
         }
     }
 }

@@ -6,10 +6,9 @@
 
 using namespace SL;
 
-Lexer::Lexer(std::string str) : holder({}),primaryHolder({}) {
-    str += " ";
+Lexer::Lexer(const std::string &str) : holder({}),primaryHolder({}),code(str+" ") {
     Node node;
-    for(auto it = str.begin(),end = str.end();it < end;++it){
+    for(auto it = code.begin(),begin = it,end = code.end();it < end;++it){
         auto &current = *it;
         if(node.token == Node::STRING){
             if(current == '\\'){
@@ -43,23 +42,28 @@ Lexer::Lexer(std::string str) : holder({}),primaryHolder({}) {
                         node.str += '\'';
                         break;
                     default:
-                        throw std::runtime_error(std::string("Unknown char \\") + *it);
+                        node.index = it-begin;
+                        makeError(std::string("Unknown char \\") + *it + "in String:",node);
                 }
                 continue;
             }else if(node.str[0] == current){
-                node.str.erase(0,1);
+                node.str.erase(0,1);//erase " or '
+                node.index = it-begin;
                 push_clear(node);
                 continue;
             }
         }
         else if(isStringMarker(current)){
+            node.index = it-begin;
             push_clear_ifnempty(node);
             node.token = Node::STRING;
         }else if(current == '\n'){
+            node.index = it-begin;
             push_clear_ifnempty(node);
             node.token = Node::SYMBOL;
         }
         else if(isSpace(current)){
+            node.index = it-begin;
             push_clear_ifnempty(node);
             continue;
         }
@@ -67,12 +71,14 @@ Lexer::Lexer(std::string str) : holder({}),primaryHolder({}) {
             if(node.token == Node::ID) {
                 //goto PUSH;
             }else if(node.token != Node::NUMBER) {
+                node.index = it-begin;
                 push_clear_ifnempty(node);
                 node.token = Node::NUMBER;
             }
         }
         else if(isIdentifier(current)){
             if(node.token != Node::ID){
+                node.index = it-begin;
                 push_clear_ifnempty(node);
                 node.token = Node::ID;
             }
@@ -84,19 +90,23 @@ Lexer::Lexer(std::string str) : holder({}),primaryHolder({}) {
                     node.clear();
                     continue;
                 }
+                node.index = it-begin;
                 push_clear_ifnempty(node);
                 node.token = Node::OPERATOR;
             }
         }
         else if(isBlock(current)){
+            node.index = it-begin;
             push_clear_ifnempty(node);//blocks have size = 1
             node.token = Node::BLOCK;
         }
         else if(isSymbol(current)){
+            node.index = it-begin;
             push_clear_ifnempty(node);
             node.token = Node::SYMBOL;
         }else{
-            throw std::runtime_error("Lexer()");///todo
+            node.index = it-begin;
+            makeError(std::string("Unknown character \'")+*it+"\':",node);
         }
         //PUSH:
         node.str += current;
@@ -132,11 +142,42 @@ Lexer::Lexer(std::string str) : holder({}),primaryHolder({}) {
             }
         }
     }
+    if(in){
+        makeError("Excepted ')' :",*(line.end()-1));
+    }
     primaryHolder.clear();
 }
 
 void Lexer::clear() {
     holder.clear();
+}
+
+void Lexer::makeError(std::string errorMessage,const Node &node) {
+    int lineNumber = 0;
+    errorMessage += '\n';
+    std::string temp;
+    for(auto it = code.begin() + node.index,begin = code.begin(); it > begin; --it){
+        if(*it == '\n'){
+            ++lineNumber;
+        }else if(!lineNumber){
+            temp += *it;
+        }
+    }
+    for(auto rit = temp.rbegin(),rend = temp.rend();rit < rend;++rit){
+        if(*rit == '\n'){
+            ++lineNumber;
+        }else if(!lineNumber){
+            errorMessage += *rit;
+        }
+    }
+    std::string::size_type arrowPadding = temp.size()-1;
+    temp.clear();
+    for(auto it = code.begin()+node.index+1,end = code.end();it < end && *it != '\n';errorMessage+=*it,++it);
+    errorMessage += '\n';
+    errorMessage += std::string(arrowPadding,' ');
+    errorMessage += "^ line ";
+    errorMessage += std::to_string(lineNumber);
+    throw std::runtime_error(errorMessage);
 }
 
 void Lexer::push_clear(Node &node) {

@@ -25,7 +25,7 @@ const Node Node::OP_LOGICAL_OR = Node{"||", Node::OPERATOR, Node::OP_BOTH};
 const Node Node::OP_ASSIGN = Node{"=", Node::OPERATOR, Node::OP_BOTH};
 const Node Node::OP_COMMA = Node{",", Node::OPERATOR, Node::OP_BOTH};
 
-Node::Node(std::string s, Token t, SpecialToken sp, std::initializer_list<Node> il) : str(std::move(s)), token(t), specialToken(sp), operands(il) {/*empty*/}
+Node::Node(std::string s, Token t, SpecialToken sp, std::initializer_list<Node> il,std::string::size_type i) : str(std::move(s)), token(t), specialToken(sp), operands(il), index(i) {/*empty*/}
 
 void Node::clear() {
     token = NONE;

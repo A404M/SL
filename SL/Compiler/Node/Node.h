@@ -35,8 +35,9 @@ namespace SL {
         Token token;
         SpecialToken specialToken;
         std::vector<Node> operands;
+        std::string::size_type index;
 
-        explicit Node(std::string  = "", Token = NONE, SpecialToken = INVALID, std::initializer_list<Node> = {});
+        explicit Node(std::string  = "", Token = NONE, SpecialToken = INVALID, std::initializer_list<Node> = {},std::string::size_type = 0);
 
         void clear();
 

@@ -14,6 +14,7 @@ namespace SL {
         friend class Runner;
     private:
         std::string holder;
+        Parser parser;
         int lastHelper;
     public:
         explicit CodeGenerator(Parser);

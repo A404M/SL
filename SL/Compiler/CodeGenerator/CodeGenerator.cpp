@@ -4,9 +4,11 @@
 
 #include "CodeGenerator.h"
 
+#include <utility>
+
 using namespace SL;
 
-CodeGenerator::CodeGenerator(Parser parser) : holder({}), lastHelper(0){
+CodeGenerator::CodeGenerator(Parser p) : holder({}), parser(std::move(p)), lastHelper(0){
     for(auto& node : parser.holder){
         generateByteCode(node);
         deleteByteCodeHelpers(holder);
@@ -120,7 +122,7 @@ void CodeGenerator::generateByteCode(Node &node, Command command) {
             break;
         case Node::OP_BETWEEN:
             if(node.operands[0].token != Node::ID){
-                throw std::runtime_error("CodeGenerator::generateByteCode");
+                parser.lexer.makeError("Expected function name:",node.operands[0]);
             }
             if(node.operands[1].isEmpty()){
                 holder += command;
@@ -148,7 +150,7 @@ void CodeGenerator::generateByteCode(Node &node, Command command) {
             break;
         case Node::INVALID:
         default:
-            throw std::runtime_error("CodeGenerator::generateByteCode");
+            parser.lexer.makeError("Unexpected element:",node);
     }
 }
 
@@ -176,7 +178,7 @@ void CodeGenerator::generateMoveByteCode(Node &node) {
                     setCodeName(node.operands[0].str,holder);
                     setCodeName(node.operands[1].str,holder);
                 default:
-                    throw std::runtime_error("CodeGenerator::generateByteCode");
+                    parser.lexer.makeError("Unexpected element:",node);
             }
             holder += MOVE_VAR;
             setHelperName(++lastHelper,holder);
@@ -189,7 +191,7 @@ void CodeGenerator::generateMoveByteCode(Node &node) {
             //no need to delete helper
         }
     }else{
-        throw std::runtime_error("CodeGenerator::generateByteCode");
+        parser.lexer.makeError("Expected variable name:",node);
     }
 }
 
@@ -216,7 +218,7 @@ void CodeGenerator::createHelperTo(Node &node,std::string &result) {
             setBool(node.str,result);
             break;
         default:
-            throw std::runtime_error("CodeGenerator::createHelperTo");
+            parser.lexer.makeError("Unexpected element:",node);
     }
 }
 
@@ -285,6 +287,6 @@ void CodeGenerator::getArguments(Node &node, std::string &arguments) {
             ++arguments[0];
             break;
         default:
-            throw std::runtime_error("CodeGenerator::getArguments");
+            parser.lexer.makeError("Unexpected element in function arguments:",node);
     }
 }
