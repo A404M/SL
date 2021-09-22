@@ -28,10 +28,10 @@ int main(int argc,char* argv[]) {
                 codeString += line + '\n';
             }
         }
+        run(codeString);
     }else{
         cout << "ERR: no input" << endl;
     }
-    run(codeString);
     return 0;
 }
 
