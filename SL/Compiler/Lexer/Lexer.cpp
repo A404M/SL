@@ -145,6 +145,10 @@ Lexer::Lexer(const std::string &str) : holder({}),primaryHolder({}),code(str+" "
     if(in){
         makeError("Excepted ')' :",*(line.end()-1));
     }
+    if (!line.empty()) {
+        holder.push_back(line);
+        line.clear();
+    }
     primaryHolder.clear();
 }
 
@@ -178,6 +182,10 @@ void Lexer::makeError(std::string errorMessage,const Node &node) {
     errorMessage += "^ line ";
     errorMessage += std::to_string(lineNumber);
     throw std::runtime_error(errorMessage);
+}
+
+bool Lexer::isEmpty() {
+    return holder.empty();
 }
 
 void Lexer::push_clear(Node &node) {

@@ -15,7 +15,7 @@ int main(int argc,char* argv[]) {
     if(argc>1){
         if(strcmp(argv[1],"-e") == 0){
             codeString = argv[2];
-            cout << codeString;
+            cout << codeString << endl;
         }else{
             ifstream file{argv[1]};
             if(!file.is_open()){
@@ -39,23 +39,23 @@ void run(const string &codeString){
     try {
         double total = 0;
         auto start = chrono::high_resolution_clock::now();
-        auto a = SL::Lexer{codeString};
+        auto lexer = SL::Lexer{codeString};
         auto diff = chrono::high_resolution_clock::now() - start;
         total += chrono::duration<double, milli>(diff).count();
         *SL::Var::output << "Lexer:\t\t\t" << chrono::duration<double, milli>(diff).count() << "ms" << endl;
         start = chrono::high_resolution_clock::now();
-        auto b = SL::Parser{a};
+        auto parser = SL::Parser{lexer};
         diff = chrono::high_resolution_clock::now() - start;
         total += chrono::duration<double, milli>(diff).count();
         *SL::Var::output << "Parser:\t\t\t" << chrono::duration<double, milli>(diff).count() << "ms" << endl;
         start = chrono::high_resolution_clock::now();
-        auto c = SL::CodeGenerator{b};
+        auto code = SL::CodeGenerator{parser};
         diff = chrono::high_resolution_clock::now() - start;
         total += chrono::duration<double, milli>(diff).count();
         *SL::Var::output << "CodeGenerator:\t" << chrono::duration<double, milli>(diff).count() << "ms" << endl;
         *SL::Var::output << "------------Program Begin------------" << endl;
         start = chrono::high_resolution_clock::now();
-        auto d = SL::Runner{c};
+        auto d = SL::Runner{code};
         diff = chrono::high_resolution_clock::now() - start;
         total += chrono::duration<double, milli>(diff).count();
         *SL::Var::output << "\n------------Program End------------" << endl;

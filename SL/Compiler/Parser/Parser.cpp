@@ -48,6 +48,10 @@ Parser::Parser(Lexer l) : lexer(std::move(l)) {
     lexer.clear();
 }
 
+bool Parser::isEmpty() {
+    return holder.empty();
+}
+
 void Parser::parseLine(std::vector<Node>& line) {
     auto orderIt = orders.begin();
 

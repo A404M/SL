@@ -19,6 +19,7 @@ namespace SL {
     public:
         explicit Parser(Lexer );
 
+        bool isEmpty();
     private:
         void parseLine(std::vector<Node>&);
 

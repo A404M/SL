@@ -20,6 +20,8 @@ namespace SL {
 
         void clear();
         void makeError(std::string,const Node &);
+
+        bool isEmpty();
     private:
         inline void push_clear(Node &);
 
