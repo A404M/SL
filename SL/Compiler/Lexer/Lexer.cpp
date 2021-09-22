@@ -166,6 +166,7 @@ void Lexer::push_clear(Node &node) {
         if(node.str == ";" || node.str == "\n"){
             holder.push_back(line);
             line.clear();
+            node.clear();
             return;
         }
     }

@@ -8,6 +8,7 @@
 
 #include "../../Compiler/CodeGenerator/CodeGenerator.h"
 #include "../Var/Var.h"
+#include <map>
 
 namespace SL {
     class Runner {

@@ -7,6 +7,7 @@
 
 
 #include "../Node/Node.h"
+#include <list>
 
 namespace SL {
     class Lexer {
