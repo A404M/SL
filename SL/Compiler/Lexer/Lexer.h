@@ -14,14 +14,12 @@ namespace SL {
     private:
         std::string code;
         std::vector<std::vector<Node>> holder;
-        std::vector<Node> primaryHolder;
+        std::vector<Node> line;
     public:
         explicit Lexer(const std::string&);
 
         void clear();
         void makeError(std::string,const Node &);
-
-        bool isEmpty();
     private:
         inline void push_clear(Node &);
 

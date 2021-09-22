@@ -6,7 +6,7 @@
 
 using namespace SL;
 
-Lexer::Lexer(const std::string &str) : holder({}),primaryHolder({}),code(str+" ") {
+Lexer::Lexer(const std::string &str) : code(str+"\n"),holder({}) {
     Node node;
     for(auto it = code.begin(),begin = it,end = code.end();it < end;++it){
         auto &current = *it;
@@ -57,10 +57,18 @@ Lexer::Lexer(const std::string &str) : holder({}),primaryHolder({}),code(str+" "
             node.index = it-begin;
             push_clear_ifnempty(node);
             node.token = Node::STRING;
-        }else if(current == '\n'){
+        }
+        else if(current == '\n'){
             node.index = it-begin;
             push_clear_ifnempty(node);
             node.token = Node::SYMBOL;
+        }else if(current == '\\'){
+            if(*(++it) == '\n'){
+                ++it;
+                continue;
+            }else{
+                makeError("Unexpected character '\\':",node);
+            }
         }
         else if(isSpace(current)){
             node.index = it-begin;
@@ -111,45 +119,9 @@ Lexer::Lexer(const std::string &str) : holder({}),primaryHolder({}),code(str+" "
         //PUSH:
         node.str += current;
     }
-    int in = 0;
-    std::vector<Node> line;
-    for(auto it = primaryHolder.begin(),begin = it,end = primaryHolder.end();it < end;++it){
-        if(it->token == Node::SYMBOL){
-            if(it->str == "\n"){
-                if(it == begin || in || ((it+1)->token == Node::SYMBOL && (it+1)->str == "\n") || (it+1)->isEqualByTokenAndString(Node::OP_COMMA) || (line.end()-1)->isEqualByTokenAndString(Node::OP_COMMA)){
-                    continue;
-                }else{
-                    if (!line.empty()) {
-                        holder.push_back(line);
-                        line.clear();
-                    }
-                }
-            }else{
-                if (it->str == ";") {
-                    if (!line.empty()) {
-                        holder.push_back(line);
-                        line.clear();
-                    }
-                }
-            }
-        }else{
-            line.push_back(*it);
-            if (it->token == Node::BLOCK) {
-                if (it->str == "(")
-                    ++in;
-                else if (it->str == ")")
-                    --in;
-            }
-        }
-    }
-    if(in){
-        makeError("Excepted ')' :",*(line.end()-1));
-    }
-    if (!line.empty()) {
+    if(!line.empty()){
         holder.push_back(line);
-        line.clear();
     }
-    primaryHolder.clear();
 }
 
 void Lexer::clear() {
@@ -184,18 +156,20 @@ void Lexer::makeError(std::string errorMessage,const Node &node) {
     throw std::runtime_error(errorMessage);
 }
 
-bool Lexer::isEmpty() {
-    return holder.empty();
-}
-
 void Lexer::push_clear(Node &node) {
     if(node.token == Node::ID) {
         if (isKeyword(node.str))
             node.token = Node::KEYWORD;
         else if (isBoolean(node.str))
             node.token = Node::BOOL;
+    }else if(node.token == Node::SYMBOL){
+        if(node.str == ";" || node.str == "\n"){
+            holder.push_back(line);
+            line.clear();
+            return;
+        }
     }
-    primaryHolder.push_back(node);
+    line.push_back(node);
     node.clear();
 }
 

@@ -11,7 +11,11 @@ std::ostream *SL::Var::output = &cout;
 std::istream *SL::Var::input = &cin;
 
 int main(int argc,char* argv[]) {
-    string codeString;
+    string str{
+        R"(print(2 + 3))"
+    };
+    run(str);
+    /*string codeString;
     if(argc>1){
         if(strcmp(argv[1],"-e") == 0){
             codeString = argv[2];
@@ -31,7 +35,7 @@ int main(int argc,char* argv[]) {
         run(codeString);
     }else{
         cout << "ERR: no input" << endl;
-    }
+    }*/
     return 0;
 }
 

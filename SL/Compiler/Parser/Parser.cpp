@@ -4,8 +4,6 @@
 
 #include "Parser.h"
 
-#include <utility>
-
 using namespace SL;
 
 const std::vector<std::vector<Node>> Parser::orders{
@@ -46,10 +44,6 @@ Parser::Parser(Lexer l) : lexer(std::move(l)) {
         holder.push_back(line[0]);
     }
     lexer.clear();
-}
-
-bool Parser::isEmpty() {
-    return holder.empty();
 }
 
 void Parser::parseLine(std::vector<Node>& line) {
@@ -184,10 +178,7 @@ void Parser::parseLine(std::vector<Node>& line) {
                 }
                 break;
             case Node::KEYWORD:{
-                if(it->str == "print"){
-                    it->operands.push_back(*(it+1));
-                    line.erase(it+1);
-                }
+
             }
                 break;
             default:
