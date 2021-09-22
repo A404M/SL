@@ -166,26 +166,33 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                 break;
             case Node::OPERATOR:
                 switch (it->specialToken) {
-                    case Node::OP_LEFT:
-                        it->operands.push_back(std::move(*(it-1)));
-                        line.erase(it-1);
+                    case Node::OP_LEFT: {
+                        auto before = it - 1;
+                        it->operands.push_back(std::move(*before));
+                        line.erase(before);
                         --it;//standard 23.1.2
                         --end;
+                    }
                         break;
-                    case Node::OP_RIGHT:
-                        it->operands.push_back(std::move(*(it+1)));
-                        line.erase(it+1);
+                    case Node::OP_RIGHT: {
+                        auto after = it + 1;
+                        it->operands.push_back(std::move(*after));
+                        line.erase(after);
                         //no need to change it | standard 23.1.2
                         --end;
+                    }
                         break;
-                    case Node::OP_BOTH:
-                        it->operands.push_back(std::move(*(it-1)));
-                        it->operands.push_back(std::move(*(it+1)));
-                        line.erase(it+1);
-                        line.erase(it-1);
+                    case Node::OP_BOTH: {
+                        auto after = it + 1;
+                        auto before = it - 1;
+                        it->operands.push_back(std::move(*before));
+                        it->operands.push_back(std::move(*after));
+                        line.erase(after);
+                        line.erase(before);
                         --it;//standard 23.1.2
                         --end;
                         --end;
+                    }
                         break;
                     default:
                         lexer.makeError("Unknown operator '" + it->str + "':",*it);
@@ -202,15 +209,17 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
 }
 
 void Parser::setOperatorKind(const std::vector<Node>::iterator &begin,const std::vector<Node>::iterator &end,const std::vector<Node>::iterator &it) {
+    auto before = it-1;
+    auto after = it+1;
     if(it->token == Node::BLOCK){
         it->specialToken = Node::OP_BETWEEN;
-    }else if(it == begin || !isOperand(*(it-1))){
-        if(it == end || !isOperand(*(it+1))){
+    }else if(it == begin || !isOperand(*before)){
+        if(it == end || !isOperand(*after)){
             return;
         }else{
             it->specialToken = Node::OP_RIGHT;
         }
-    }else if(it == end || !isOperand(*(it+1))){
+    }else if(it == end || !isOperand(*after)){
         it->specialToken = Node::OP_LEFT;
     }else{
         it->specialToken = Node::OP_BOTH;
