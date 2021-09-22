@@ -20,7 +20,7 @@ namespace SL {
         explicit Parser(Lexer);
 
     private:
-        void parseLine(std::vector<Node>&);
+        void parseLine(std::vector<Node>::iterator &,std::vector<Node>::iterator &,std::vector<Node>&);
 
         static void setOperatorKind(const std::vector<Node>::iterator &,const std::vector<Node>::iterator &,const std::vector<Node>::iterator &);
         static bool isOperand(const Node&);
