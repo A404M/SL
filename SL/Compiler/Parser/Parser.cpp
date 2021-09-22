@@ -121,8 +121,8 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                     }
 
                     --it;
-                    it->operands.push_back(*(it-1));
-                    it->operands.push_back(*(it+1));
+                    it->operands.push_back(std::move(*(it-1)));
+                    it->operands.push_back(std::move(*(it+1)));
                     line.erase(it+1);
                     line.erase(it-1);
                     --it;//standard 23.1.2
@@ -167,20 +167,20 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
             case Node::OPERATOR:
                 switch (it->specialToken) {
                     case Node::OP_LEFT:
-                        it->operands.push_back(*(it-1));
+                        it->operands.push_back(std::move(*(it-1)));
                         line.erase(it-1);
                         --it;//standard 23.1.2
                         --end;
                         break;
                     case Node::OP_RIGHT:
-                        it->operands.push_back(*(it+1));
+                        it->operands.push_back(std::move(*(it+1)));
                         line.erase(it+1);
                         //no need to change it | standard 23.1.2
                         --end;
                         break;
                     case Node::OP_BOTH:
-                        it->operands.push_back(*(it-1));
-                        it->operands.push_back(*(it+1));
+                        it->operands.push_back(std::move(*(it-1)));
+                        it->operands.push_back(std::move(*(it+1)));
                         line.erase(it+1);
                         line.erase(it-1);
                         --it;//standard 23.1.2
