@@ -63,9 +63,8 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                         auto founded = isInBy_string_token(*orderIt, temp);
                         if (founded != orderIt->cend()) {
                             if (*founded == *temp) {
-                                std::swap(it,temp);
+                                it = temp;
                                 if(it->token == Node::OPERATOR && it->str == "="){//left associative
-                                    std::swap(temp,it);
                                     continue;
                                 }else{
                                     goto BRK;
@@ -122,7 +121,7 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                             }
                         }
                         ++it;
-                        if (it >= end) {
+                        if (it == end) {
                             --it;
                             Node *pointer = &*it;
                             while(!pointer->operands.empty()){
@@ -160,7 +159,7 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                             }
                         }
                         ++it;
-                        if (it >= line.end()) {
+                        if (it == line.end()) {
                             --it;
                             Node *pointer = &*it;
                             while(!pointer->operands.empty()){
@@ -220,12 +219,12 @@ void Parser::setOperatorKind(const std::vector<Node>::iterator &begin,const std:
     if(it->token == Node::BLOCK){
         it->specialToken = Node::OP_BETWEEN;
     }else if(it == begin || !isOperand(before)){
-        if(it == end || after == end || !isOperand(*after)){
+        if(after == end || !isOperand(*after)){
             return;
         }else{
             it->specialToken = Node::OP_RIGHT;
         }
-    }else if(it == end || !isOperand(*after)){
+    }else if(after == end || !isOperand(*after)){
         it->specialToken = Node::OP_LEFT;
     }else{
         it->specialToken = Node::OP_BOTH;
