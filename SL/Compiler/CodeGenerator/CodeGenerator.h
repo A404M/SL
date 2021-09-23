@@ -13,12 +13,12 @@ namespace SL {
     class CodeGenerator {
         friend class Runner;
     private:
+    public:
         std::string holder;
         Parser parser;
-        int lastHelper;
+        int lastHelper{};
     public:
-        explicit CodeGenerator(Parser);
-
+        explicit CodeGenerator(Parser&);
     private:
         void generateByteCode(Node&);
         void generateByteCode(Node&,Command);

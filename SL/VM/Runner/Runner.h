@@ -17,7 +17,7 @@ namespace SL {
         CodeGenerator code;
         std::string::const_iterator it,begin,end;
     public:
-        explicit Runner(CodeGenerator);
+        explicit Runner(CodeGenerator&);
 
     private:
         void getNextNameOrString(std::string&);

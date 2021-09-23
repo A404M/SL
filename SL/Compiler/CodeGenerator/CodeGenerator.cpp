@@ -4,11 +4,9 @@
 
 #include "CodeGenerator.h"
 
-#include <utility>
-
 using namespace SL;
 
-CodeGenerator::CodeGenerator(Parser p) : holder({}), parser(std::move(p)), lastHelper(0){
+CodeGenerator::CodeGenerator(Parser& p) : holder({}), parser(std::move(p)), lastHelper(0){
     for(auto& node : parser.holder){
         generateByteCode(node);
         deleteByteCodeHelpers(holder);

@@ -6,7 +6,7 @@
 
 using namespace SL;
 
-Runner::Runner(CodeGenerator c) : varHolder({}), code(std::move(c)),
+Runner::Runner(CodeGenerator& c) : varHolder({}), code(std::move(c)),
                 it(code.holder.begin()),begin(it),end(code.holder.end()) {
     Command command;
     std::string word1,word2;

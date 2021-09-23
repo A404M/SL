@@ -39,6 +39,9 @@ const std::vector<std::vector<Node>> Parser::orders{
 };
 
 Parser::Parser(Lexer& l) : lexer(std::move(l)) {
+    if(lexer.holder.empty()){
+        return;
+    }
     for(auto& line : lexer.holder) {
         auto begin = line.begin(),end = line.end();
         parseLine(begin,end,line);
