@@ -124,10 +124,6 @@ Lexer::Lexer(const std::string &str) : code(str+"\n"),holder({}) {
     }
 }
 
-void Lexer::clear() {
-    holder.clear();
-}
-
 void Lexer::makeError(std::string errorMessage,const Node &node) {
     int lineNumber = 0;
     errorMessage += '\n';

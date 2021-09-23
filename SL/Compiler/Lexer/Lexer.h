@@ -19,7 +19,6 @@ namespace SL {
     public:
         explicit Lexer(const std::string&);
 
-        void clear();
         void makeError(std::string,const Node &);
     private:
         inline void push_clear(Node &);

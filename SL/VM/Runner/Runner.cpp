@@ -156,13 +156,13 @@ void Runner::print(const std::string &returnVar,const std::vector<std::string> &
     //no returnVar
 }
 
-void Runner::stringInput(const std::string &returnVar,const std::vector<std::string> &args) {
+void Runner::stringInput(const std::string &returnVar,const std::vector<std::string> &) {
     std::string temp;
     *Var::input >> temp;
     varHolder[returnVar] = Var(temp);
 }
 
-void Runner::numberInput(const std::string &returnVar,const std::vector<std::string> &args) {
+void Runner::numberInput(const std::string &returnVar,const std::vector<std::string> &) {
     Number temp;
     *Var::input >> temp;
     if(std::cin.fail()){
@@ -171,7 +171,7 @@ void Runner::numberInput(const std::string &returnVar,const std::vector<std::str
     varHolder[returnVar] = Var(temp);
 }
 
-void Runner::booleanInput(const std::string &returnVar,const std::vector<std::string> &args) {
+void Runner::booleanInput(const std::string &returnVar,const std::vector<std::string> &) {
     std::string temp;
     *Var::input >> temp;
     if(temp == "true"){
