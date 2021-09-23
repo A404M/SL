@@ -54,13 +54,15 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
             switch(temp->token){
                 case Node::BLOCK:
                 case Node::OPERATOR:
-                case Node::KEYWORD:if(temp->operands.empty()) {
+                case Node::KEYWORD:
+                    if(temp->operands.empty()) {
                         setOperatorKind(begin, end, temp);
                         auto founded = isInBy_string_token(*orderIt, temp);
                         if (founded != orderIt->cend()) {
                             if (*founded == *temp) {
-                                it = temp;
+                                std::swap(it,temp);
                                 if(it->token == Node::OPERATOR && it->str == "="){//left associative
+                                    std::swap(temp,it);
                                     continue;
                                 }else{
                                     goto BRK;
@@ -109,11 +111,9 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                                 }else {
                                     auto diff = end-it;
                                     parseLine(b,it,line);
-                                    end = it+diff;
                                     line.erase(it);
                                     --it;
-                                    --end;
-                                    *it = *b;
+                                    end = it+diff;
                                 }
                                 break;
                             }
@@ -130,17 +130,10 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                     }
 
                     --it;
-                    it->operands.push_back(std::move(*(it-1)));
-                    it->operands.push_back(std::move(*(it+1)));
-                    line.erase(it+1);
-                    line.erase(it-1);
-                    --it;//standard 23.1.2
-                    end-=2;
+                    goto PUSH_BOTH;
                 }else{
                     int in = 1;
-                    line.erase(it);
-                    --end;
-                    auto b = it;
+                    auto b = ++it;
                     while (true) {
                         if (it->token == Node::BLOCK) {
                             if (it->str == "(")
@@ -151,10 +144,13 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                                 throw std::runtime_error("Parser::parseLine");
 
                             if (!in) {
-                                line.erase(it);
-                                --end;
                                 auto diff = end-it;
                                 parseLine(b,it,line);
+                                --b;
+                                --it;
+                                *b = std::move(*it);
+                                line.erase(it,it+2);
+                                --it;
                                 end = it+diff;
 
                                 break;
@@ -167,7 +163,7 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                             while(!pointer->operands.empty()){
                                 pointer = &*(pointer->operands.end()-1);
                             }
-                            lexer.makeError("Excepted ')' :",*pointer);
+                            lexer.makeError("Excepted ')':",*pointer);
                         }
                     }
                 }
@@ -178,7 +174,7 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                         auto before = it - 1;
                         it->operands.push_back(std::move(*before));
                         line.erase(before);
-                        --it;//standard 23.1.2
+                        //--it;//standard 23.1.2
                         --end;
                     }
                         break;
@@ -191,13 +187,13 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
                     }
                         break;
                     case Node::OP_BOTH: {
-                        auto after = it + 1;
+                        PUSH_BOTH:auto after = it + 1;
                         auto before = it - 1;
                         it->operands.push_back(std::move(*before));
                         it->operands.push_back(std::move(*after));
-                        line.erase(after);
-                        line.erase(before);
-                        --it;//standard 23.1.2
+                        *before = std::move(*it);
+                        line.erase(it,++after);
+                        //--it;//standard 23.1.2
                         end-=2;
                     }
                         break;
@@ -216,17 +212,17 @@ void Parser::parseLine(std::vector<Node>::iterator &begin,std::vector<Node>::ite
 }
 
 void Parser::setOperatorKind(const std::vector<Node>::iterator &begin,const std::vector<Node>::iterator &end,const std::vector<Node>::iterator &it) {
-    auto& before = *(it-1);
-    auto& after = *(it+1);
+    const auto& before = *(it-1);
+    auto after = it+1;
     if(it->token == Node::BLOCK){
         it->specialToken = Node::OP_BETWEEN;
     }else if(it == begin || !isOperand(before)){
-        if(it == end || !isOperand(after)){
+        if(it == end || after == end || !isOperand(*after)){
             return;
         }else{
             it->specialToken = Node::OP_RIGHT;
         }
-    }else if(it == end || !isOperand(after)){
+    }else if(it == end || !isOperand(*after)){
         it->specialToken = Node::OP_LEFT;
     }else{
         it->specialToken = Node::OP_BOTH;
