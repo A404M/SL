@@ -6,7 +6,8 @@
 
 using namespace SL;
 
-Lexer::Lexer(const std::string &str) : code(str+"\n"),holder({}) {
+Lexer::Lexer(std::string &str) : code(std::move(str)),holder({}) {
+    code += "\n";
     Node node;
     for(auto it = code.begin(),begin = it,end = code.end();it < end;++it){
         auto &current = *it;
@@ -128,7 +129,7 @@ void Lexer::makeError(std::string errorMessage,const Node &node) {
     int lineNumber = 0;
     errorMessage += '\n';
     std::string temp;
-    for(auto it = code.begin() + node.index,begin = code.begin(); it > begin; --it){
+    for(auto it = code.begin() + node.index,begin = code.begin(); it >= begin; --it){
         if(*it == '\n'){
             ++lineNumber;
         }else if(!lineNumber){

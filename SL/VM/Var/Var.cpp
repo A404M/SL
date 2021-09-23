@@ -3,7 +3,6 @@
 //
 
 #include "Var.h"
-#include <iomanip>
 
 using namespace SL;
 
@@ -134,8 +133,7 @@ void Var::logicalOr(const Var &var) {
 }
 
 void Var::move(const Var &var) {
-    holder = var.holder;
-    type = var.type;
+    *this = var;
 }
 
 void Var::print() {

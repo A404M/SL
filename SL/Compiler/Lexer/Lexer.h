@@ -17,7 +17,7 @@ namespace SL {
         std::vector<std::vector<Node>> holder;
         std::vector<Node> line;
     public:
-        explicit Lexer(const std::string&);
+        explicit Lexer(std::string&);
 
         void makeError(std::string,const Node &);
     private:

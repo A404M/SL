@@ -12,20 +12,24 @@
 
 namespace SL {
     class Runner {
+    public:
+        typedef std::map<std::string,Var> VarHolder;
+        typedef void (*FunctionPointer)(const std::string&,const std::vector<std::string>&,VarHolder&);
     private:
-        std::map<std::string,Var> varHolder;
+        VarHolder varHolder;
         CodeGenerator code;
         std::string::const_iterator it,begin,end;
+        static const std::map<std::string,FunctionPointer> functions;
     public:
         explicit Runner(CodeGenerator&);
 
     private:
         void getNextNameOrString(std::string&);
 
-        void print(const std::string&,const std::vector<std::string>&);
-        void stringInput(const std::string&,const std::vector<std::string>&);
-        void numberInput(const std::string&,const std::vector<std::string>&);
-        void booleanInput(const std::string&,const std::vector<std::string>&);
+        static void print(const std::string&,const std::vector<std::string>&,VarHolder&);
+        static void stringInput(const std::string&,const std::vector<std::string>&,VarHolder&);
+        static void numberInput(const std::string&,const std::vector<std::string>&,VarHolder&);
+        static void booleanInput(const std::string&,const std::vector<std::string>&,VarHolder&);
     };
 }//namespace SL
 
