@@ -30,6 +30,7 @@ namespace SL {
         static void stringInput(const std::string&,const std::vector<std::string>&,VarHolder&);
         static void numberInput(const std::string&,const std::vector<std::string>&,VarHolder&);
         static void booleanInput(const std::string&,const std::vector<std::string>&,VarHolder&);
+        static void pow(const std::string&,const std::vector<std::string>&,VarHolder&);
     };
 }//namespace SL
 

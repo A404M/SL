@@ -151,3 +151,14 @@ void Var::print() {
             throw std::runtime_error("Var::print");
     }
 }
+
+void Var::pow(const Var &var) {
+    int p = std::get<Number>(var.holder);
+    Number value = std::get<Number>(holder);
+    Number result = 1;
+    while(p > 0){
+        result *= value;
+        --p;
+    }
+    holder = result;
+}

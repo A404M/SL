@@ -11,6 +11,7 @@ const std::map<std::string,void (*)(const std::string&,const std::vector<std::st
         {"stringInput",stringInput},
         {"numberInput",numberInput},
         {"booleanInput",booleanInput},
+        {"pow",pow}
 };
 
 Runner::Runner(CodeGenerator& c) : varHolder({}), code(std::move(c)),
@@ -181,4 +182,11 @@ void Runner::booleanInput(const std::string &returnVar,const std::vector<std::st
         throw std::runtime_error("Runner::booleanInput");
     }
 
+}
+
+void Runner::pow(const std::string &returnVar,const std::vector<std::string> &args,VarHolder &varH) {
+    auto number = varH[args[0]];
+    auto p = varH[args[0]];
+    varH[args[0]].pow(varH[args[1]]);
+    varH[returnVar] = varH[args[0]];
 }

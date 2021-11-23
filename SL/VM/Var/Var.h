@@ -57,6 +57,8 @@ namespace SL {
 
         void print();
 
+        void pow(const Var&);
+
         /*bool operator==(const Var&);
         bool operator>(const Var&);
         bool operator<(const Var&);

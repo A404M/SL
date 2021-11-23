@@ -137,11 +137,7 @@ void Lexer::makeError(std::string errorMessage,const Node &node) {
         }
     }
     for(auto rit = temp.rbegin(),rend = temp.rend();rit < rend;++rit){
-        if(*rit == '\n'){
-            ++lineNumber;
-        }else if(!lineNumber){
-            errorMessage += *rit;
-        }
+        errorMessage += *rit;
     }
     std::string::size_type arrowPadding = temp.size()-1;
     temp.clear();
@@ -149,7 +145,7 @@ void Lexer::makeError(std::string errorMessage,const Node &node) {
     errorMessage += '\n';
     errorMessage += std::string(arrowPadding,' ');
     errorMessage += "^ line ";
-    errorMessage += std::to_string(lineNumber);
+    errorMessage += std::to_string(lineNumber+1);
     throw std::runtime_error(errorMessage);
 }
 
@@ -161,7 +157,8 @@ void Lexer::push_clear(Node &node) {
             node.token = Node::BOOL;
     }else if(node.token == Node::SYMBOL){
         if(node.str == ";" || node.str == "\n"){
-            holder.push_back(line);
+            if(!line.empty())
+                holder.push_back(line);
             line.clear();
             node.clear();
             return;

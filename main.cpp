@@ -1,7 +1,7 @@
 #include "SL/VM/Runner/Runner.h"
 #include <chrono>
 #include <fstream>
-#include <cstring>
+//#include <cstring>
 
 using namespace std;
 
@@ -10,12 +10,12 @@ void run(string);
 std::ostream *SL::Var::output = &cout;
 std::istream *SL::Var::input = &cin;
 
-int main(int argc,char* argv[]) {
-    /*string str{
-        R"(a = (b = 1+2);print(a))"
-    };
-    run(str);*/
-    string codeString;
+int main(/*int argc,char* argv[]*/) {
+    string str{R"(
+print(1+2*3)
+)"};
+    run(str);
+    /*string codeString;
     if(argc>1){
         if(strcmp(argv[1],"-e") == 0){
             codeString = argv[2];
@@ -36,7 +36,7 @@ int main(int argc,char* argv[]) {
     }else{
         cout << "ERR: no input" << endl;
         return EXIT_FAILURE;
-    }
+    }*/
     return EXIT_SUCCESS;
 }
 
